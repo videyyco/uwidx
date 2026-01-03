@@ -1,0 +1,191 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Video Click Redirect</title>
+  <style>
+    body {
+      display:flex;
+      flex-direction: column;
+      align-items:center;
+      justify-content:center;
+      min-height:100vh;
+      margin:0;
+      background:#000;
+      font-family: Arial, sans-serif;
+    }
+    
+    .container {
+      width:100%;
+      max-width:720px;
+      position:relative;
+    }
+    
+    video {
+      width:100%;
+      max-width:720px;
+      border-radius:10px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+    }
+    
+    .overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.7);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      text-align: center;
+      padding: 20px;
+      border-radius: 10px;
+      opacity: 0;
+      transition: opacity 0.3s;
+      pointer-events: none;
+    }
+    
+    .overlay.active {
+      opacity: 1;
+      pointer-events: all;
+    }
+    
+    .overlay h3 {
+      margin: 0 0 15px 0;
+      font-size: 22px;
+      color: #4dabf7;
+    }
+    
+    .overlay p {
+      margin: 0 0 20px 0;
+      font-size: 16px;
+      line-height: 1.4;
+      max-width: 80%;
+    }
+    
+    .redirect-btn {
+      background: #4dabf7;
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.3s;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 4px 10px rgba(77, 171, 247, 0.3);
+    }
+    
+    .redirect-btn:hover {
+      background: #339af0;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 15px rgba(77, 171, 247, 0.4);
+    }
+    
+    .info-text {
+      color: #aaa;
+      font-size: 14px;
+      text-align: center;
+      margin-top: 15px;
+      max-width: 720px;
+      padding: 0 20px;
+    }
+    
+    @media (max-width: 768px) {
+      .container {
+        padding: 0 10px;
+      }
+      
+      .overlay h3 {
+        font-size: 18px;
+      }
+      
+      .overlay p {
+        font-size: 14px;
+        max-width: 90%;
+      }
+      
+      .redirect-btn {
+        padding: 10px 20px;
+        font-size: 14px;
+      }
+    }
+  </style>
+  <!-- Font Awesome untuk ikon -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+
+<div class="container">
+  <video id="vid" controls playsinline preload="metadata">
+    <source src="https://cdn.videy.co/NTckHOeh1.mp4" type="video/mp4">
+  </video>
+  
+  <div class="overlay" id="overlay">
+    <h3>Video Dijeda Sementara</h3>
+    <p>Untuk melanjutkan menonton, silakan kunjungi tautan sponsor di bawah ini. Video akan diputar otomatis setelah tautan dibuka.</p>
+    <button class="redirect-btn" id="redirectBtn">
+      <i class="fas fa-external-link-alt"></i> Kunjungi Tautan Sponsor
+    </button>
+  </div>
+</div>
+
+<div class="info-text">
+  Klik tombol play untuk memulai video. Video akan dijeda sementara untuk menampilkan opsi sponsor.
+</div>
+
+<script>
+  const video = document.getElementById("vid");
+  const overlay = document.getElementById("overlay");
+  const redirectBtn = document.getElementById("redirectBtn");
+
+  // GANTI LINK IKLAN DI SINI
+  const adUrl = "https://capcut-yt.onelink.me/W3Oy?af_dp=capcut%3A%2F%2Fmain%2Fweb%3Fhide_nav_bar%3D1%26full_screen%3D1%26immersive_mode%3D1%26loading_bgcolor%3Dffffff%26nav_bar_color%3Dffffff%26status_bar_color%3Dffffffff%26status_font_dark%3D1%26title_color%3D000000ff%26hide_nav_bar%3D1%26theme%3Dlight%26web_url%3Dhttps%253A%252F%252Fwww.capcut.com%252Factivities%252Fpick%252Freferral-main%253Fcampaign_key%253Dpick_special%2526code%253D%2526invitor_did%253D7586922846984750600%2526invitor_uid%253D7589994628150494228%2526sub_campaign_key%253Dpick_referral_cash_ugc%2526uniq_id%253D188592942852&af_siteid=MS4wLjABAAAANwkJuWIRFOzg5uCpDRpMj4OX-QryoDgn-yYlXQnRwQQ&campaign_id=pick_referral_cash_ugc&deep_link_value=capcut%3A%2F%2Fmain%2Fweb%3Fhide_nav_bar%3D1%26full_screen%3D1%26immersive_mode%3D1%26loading_bgcolor%3Dffffff%26nav_bar_color%3Dffffff%26status_bar_color%3Dffffffff%26status_font_dark%3D1%26title_color%3D000000ff%26hide_nav_bar%3D1%26theme%3Dlight%26web_url%3Dhttps%253A%252F%252Fwww.capcut.com%252Factivities%252Fpick%252Freferral-main%253Fcampaign_key%253Dpick_special%2526code%253D%2526invitor_did%253D7586922846984750600%2526invitor_uid%253D7589994628150494228%2526sub_campaign_key%253Dpick_referral_cash_ugc%2526uniq_id%253D188592942852&enter_from=referral_ugc&pid=referral_ugc";
+
+  let alreadyRedirect = false;
+
+  video.addEventListener("play", function () {
+    if (alreadyRedirect) return;
+
+    // Jeda video
+    video.pause();
+    
+    // Tampilkan overlay (video tetap terlihat di belakang dengan efek gelap)
+    overlay.classList.add("active");
+    
+    // Tandai bahwa video sudah dicoba diputar
+    alreadyRedirect = true;
+  });
+
+  redirectBtn.addEventListener("click", function () {
+    // Buka tautan di tab baru
+    window.open(adUrl, "_blank");
+    
+    // Sembunyikan overlay
+    overlay.classList.remove("active");
+    
+    // Lanjutkan video setelah 1 detik (memberi waktu untuk membuka tab)
+    setTimeout(() => {
+      video.play();
+    }, 1000);
+  });
+
+  // Opsional: Tambahkan handler jika pengguna menekan tombol play pada video
+  // setelah overlay muncul (misalnya jika mereka mengklik kontrol video)
+  video.addEventListener("click", function(e) {
+    if (overlay.classList.contains("active")) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+  });
+</script>
+
+</body>
+</html>
